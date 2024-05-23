@@ -4,12 +4,10 @@ import java.util.Set;
 
 class Menu {
     private GerenciadorAlunos gerenciadorAlunos;
-    private GerenciadorNotas gerenciadorNotas;
     private Scanner scanner;
 
     public Menu() {
         gerenciadorAlunos = new GerenciadorAlunos();
-        gerenciadorNotas = new GerenciadorNotas();
         scanner = new Scanner(System.in);
     }
 
@@ -70,7 +68,8 @@ class Menu {
         double nota = scanner.nextDouble();
         Aluno aluno = gerenciadorAlunos.buscarAluno(numeroAluno);
         if (aluno != null) {
-            gerenciadorNotas.cadastrarNota(numeroAluno, nota);
+            aluno.adicionarNota(nota);
+            System.out.println("Nota cadastrada.");
         } else {
             System.out.println("Aluno não cadastrado.");
         }
@@ -85,23 +84,22 @@ class Menu {
             return;
         }
 
-        List<Nota> notas = gerenciadorNotas.buscarNotasDoAluno(numeroAluno);
+        List<Double> notas = aluno.getNotas();
         if (notas.isEmpty()) {
             System.out.println("Aluno sem notas.");
             return;
         }
 
         double soma = 0;
-        for (Nota nota : notas) {
-            soma += nota.getValor();
+        for (double nota : notas) {
+            soma += nota;
         }
         double media = soma / notas.size();
         System.out.println("Média do aluno " + aluno.getNome() + " = " + media);
     }
 
     private void listarAlunosSemNotas() {
-        Set<Integer> alunosComNotas = gerenciadorNotas.alunosComNotas();
-        List<Aluno> alunosSemNotas = gerenciadorAlunos.listarAlunosSemNotas(alunosComNotas);
+        List<Aluno> alunosSemNotas = gerenciadorAlunos.listarAlunosSemNotas();
         if (alunosSemNotas.isEmpty()) {
             System.out.println("Todos os alunos possuem notas.");
         } else {
@@ -117,15 +115,24 @@ class Menu {
             System.out.println("Pilha vazia.");
             return;
         }
-        Aluno aluno = gerenciadorAlunos.buscarAluno(gerenciadorAlunos.proximoNumero - 1);
-        if (aluno != null && gerenciadorNotas.buscarNotasDoAluno(aluno.getNumero()).isEmpty()) {
-            gerenciadorAlunos.excluirAluno();
-        } else {
-            System.out.println("Este aluno possui notas, logo, não poderá ser excluído.");
-        }
+        gerenciadorAlunos.excluirAluno();
     }
 
     private void excluirNota() {
-        gerenciadorNotas.excluirNota();
+        System.out.print("Digite o número do aluno: ");
+        int numeroAluno = scanner.nextInt();
+        Aluno aluno = gerenciadorAlunos.buscarAluno(numeroAluno);
+        if (aluno != null && aluno.excluirNota()) {
+            System.out.println("Nota excluída.");
+        } else {
+            System.out.println("Aluno não cadastrado ou sem notas para excluir.");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Menu menu = new Menu();
+        menu.exibir();
     }
 }

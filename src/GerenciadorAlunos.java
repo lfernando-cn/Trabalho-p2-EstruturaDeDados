@@ -5,7 +5,7 @@ import java.util.Stack;
 
 class GerenciadorAlunos {
     private Stack<Aluno> pilhaAlunos;
-    public int proximoNumero;
+    private int proximoNumero;
 
     public GerenciadorAlunos() {
         pilhaAlunos = new Stack<>();
@@ -32,21 +32,34 @@ class GerenciadorAlunos {
             System.out.println("Pilha vazia.");
             return false;
         }
+        Aluno aluno = pilhaAlunos.peek();
+        if (aluno.temNotas()) {
+            System.out.println("Este aluno possui notas, logo, não poderá ser excluído.");
+            return false;
+        }
         pilhaAlunos.pop();
         System.out.println("Aluno excluído.");
         return true;
     }
 
-    public List<Aluno> listarAlunosSemNotas(Set<Integer> alunosComNotas) {
+    public List<Aluno> listarAlunosSemNotas() {
         List<Aluno> alunosSemNotas = new ArrayList<>();
         for (Aluno aluno : pilhaAlunos) {
-            if (!alunosComNotas.contains(aluno.getNumero())) {
+            if (!aluno.temNotas()) {
                 alunosSemNotas.add(aluno);
             }
         }
         return alunosSemNotas;
     }
+
     public boolean temAlunos() {
         return !pilhaAlunos.isEmpty();
+    }
+
+    public Aluno obterUltimoAluno() {
+        if (pilhaAlunos.isEmpty()) {
+            return null;
+        }
+        return pilhaAlunos.peek();
     }
 }
